@@ -3,26 +3,31 @@ const { inject, errorHandler } = require("express-custom-error");
 inject(); // Patch express in order to use async / await syntax
 
 // Require Dependencies
-
 const express = require("express");
 const cookieParser = require("cookie-parser");
+var bodyParser = require("body-parser");
+// var mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
-
 const logger = require("./util/logger");
+var fs = require("fs");
+var path = require("path");
+// var upload = require("./storage/multer");
+const connection = require("./database/index");
 
 // Load .env Enviroment Variables to process.env
-
 require("mandatoryenv").load(["DB_URL", "PORT", "SECRET"]);
 
+// Connect to MongoDB
+connection();
 const { PORT } = process.env;
 
 // Instantiate an Express Application
 const app = express();
 
 // Configure Express App Instance
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // Configure custom logger middleware
 app.use(logger.dev, logger.combined);
@@ -39,9 +44,9 @@ app.use("*", (req, res, next) => {
 
 // Assign Routes
 // app.use('/', require('./routes/router.js'));
-require("./routes/router.js")(app);
+require("./routes/router")(app);
 
-// Handle errors
+// // Handle errors
 app.use(errorHandler());
 
 // Handle not valid route
