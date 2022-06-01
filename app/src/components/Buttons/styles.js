@@ -6,11 +6,12 @@ export const ButtonWrapper = styled.Pressable`
     width: 100%;
 
     /* min-width: 150px; */
-    height: 50px;
+    height: 70px;
     background-color: ${({ theme, isPrimary }) => isPrimary? theme.colors.primary: 'transparent'};
     border-radius: 10px;
     align-items: center;
     justify-content: center;
+    margin: 10px 0px;
 `;
 
 export const ButtonText = styled.Text`

@@ -10,6 +10,7 @@ const Stack = createNativeStackNavigator();
 
 // import Home from './Views/Home'
 import Login from './Views/Login'
+import Home from './Views/Home'
 
 
 export default function Routes(){
@@ -18,7 +19,7 @@ export default function Routes(){
     return(
         // <SafeAreaView>
             <NavigationContainer>
-                <Stack.Navigator initialRouteName="Login"
+                <Stack.Navigator initialRouteName="Home"
                     screenOptions={{
                         headerStyle: {
                             backgroundColor: colors.primary,
@@ -26,8 +27,8 @@ export default function Routes(){
                         headerTintColor: '#fff',
                     }}
                 >
-                    <Stack.Screen name="Login" component={Login} />
-                    <Stack.Screen name="Home" component={Login} 
+                    <Stack.Screen name="Home" component={Home} />
+                    <Stack.Screen name="Student" component={Login} 
                         options={{
                             headerBackButtonMenuEnabled: true,
                         }}

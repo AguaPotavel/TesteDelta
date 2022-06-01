@@ -41,8 +41,8 @@ export default function Login({ navigation }) {
 
     return (
         <Container>
-            <InputTextComponent placeholder={'username'} iconName={"user"} />
-            <InputTextComponent placeholder={'Email'} iconName={"mail"} />
+            <InputTextComponent placeholder={'Nome'} iconName={"user"} />
+            <InputTextComponent placeholder={'Endereço'} iconName={"map"} />
             <PrimaryButton onPress={handleLogin} text={'Entrar'}/>
         </Container>
     )
