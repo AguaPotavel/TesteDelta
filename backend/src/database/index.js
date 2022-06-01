@@ -1,15 +1,28 @@
-const mongoose = require("mongoose");
+const { Sequelize } = require("sequelize");
+// const sequelize = new Sequelize(process.env.DB_URL, {
+//   dialect: "postgres",
+//   dialectOptions: {
+//     ssl: {
+//       rejectUnauthorized: false,
+//     },
+//   }
+// });
 
-module.exports = async function connection() {
-  try {
-    const connectionParams = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    };
-    await mongoose.connect(process.env.DB_URL, connectionParams);
-    console.log("connected to database");
-  } catch (error) {
-    console.log(error);
-    console.log("could not connect to database");
-  }
-};
+// sequelize
+//   .authenticate()
+//   .then(() => {
+//     console.log("connected to database");
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//     console.log("could not connect to database");
+//   });
+
+// module.exports = sequelize;
+
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './src/database/database.sqlite'
+})
+
+module.exports = sequelize;
