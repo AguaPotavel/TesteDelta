@@ -71,12 +71,18 @@ exports.deleteStudent = async (req, res) => {
     where: {
       userId: userId,
     },
-  })
+  });
 
-  const pathImage = path.join(__dirname, "../static/images", profileImage.filename);
+  if (profileImage) {
+    const pathImage = path.join(
+      __dirname,
+      "../static/images",
+      profileImage.filename
+    );
 
-  if (fs.existsSync(pathImage)) {
-    fs.unlinkSync(pathImage);
+    if (fs.existsSync(pathImage)) {
+      fs.unlinkSync(pathImage);
+    }
   }
 
   const user = await User.findByPk(userId);
@@ -96,7 +102,7 @@ exports.deleteStudent = async (req, res) => {
       error: err,
     });
   }
-}
+};
 
 exports.getStudentPhoto = async (req, res) => {
   const { user } = req.params;
@@ -119,7 +125,6 @@ exports.getStudentPhoto = async (req, res) => {
         message: "Image not found",
       });
 
-    
     res.status(200).json({
       message: "Success",
       image: image.filename,
@@ -143,8 +148,14 @@ exports.postPhoto = async (req, res) => {
   });
 
   if (hasImageOnUser) {
-    console.log(path.join(__dirname, "../static/images", hasImageOnUser.filename));
-    const pathImage = path.join(__dirname, "../static/images", hasImageOnUser.filename);
+    console.log(
+      path.join(__dirname, "../static/images", hasImageOnUser.filename)
+    );
+    const pathImage = path.join(
+      __dirname,
+      "../static/images",
+      hasImageOnUser.filename
+    );
 
     if (fs.existsSync(pathImage)) {
       fs.unlinkSync(pathImage);
