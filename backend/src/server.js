@@ -45,6 +45,10 @@ app.use("*", (req, res, next) => {
 // app.use('/', require('./routes/router.js'));
 require("./routes/router")(app);
 
+console.log(path.join(__dirname, "..", "uploads"));
+
+app.use("/static", express.static(path.join(__dirname + "/static/images")));
+
 // // Handle errors
 app.use(errorHandler());
 
