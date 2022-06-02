@@ -20,9 +20,10 @@ const DATA = [
   },
 ];
 
-export default function Home({ navigation }) {
+export default function Home({ route, navigation }) {
   const { setShowModal, setComponentModal, setIsLoading } = useModal();
   const [studentsList, setStudentsList] = useState([]);
+  const reload = route.params
 
   const handleAddNewStudent = () => {
     navigation.navigate("Student", {});
@@ -31,6 +32,7 @@ export default function Home({ navigation }) {
   useEffect(() => {
     async function fetchStudents() {
       setIsLoading(true);
+      setShowModal(true);
       const response = await getStudents();
       
       if(response.status !== 200) return;
@@ -38,11 +40,12 @@ export default function Home({ navigation }) {
       const { students } = response.data;
       
       setIsLoading(false);
+      setShowModal(false);
       setStudentsList(students);
     }
 
     fetchStudents();
-  }, []);
+  }, [reload]);
 
   return (
     <Container>

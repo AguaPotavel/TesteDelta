@@ -122,7 +122,7 @@ export default function Student({ route, navigation }) {
     }
     
     setIsLoading(false);
-    navigation.navigate("Home");
+    navigation.navigate("Home", {reload: true});
   };
 
   const handleSelectPhoto = async () => {

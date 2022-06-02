@@ -2,6 +2,9 @@ require("dotenv").config();
 
 // Patches
 const { inject, errorHandler } = require("express-custom-error");
+// const { networkInterfaces } = require('os');
+var ip = require("ip");
+// console.log(ip.address());
 inject(); // Patch express in order to use async / await syntax
 
 // Require Dependencies
@@ -34,7 +37,7 @@ app.use(cookieParser());
 app.use(cors());
 app.use(helmet());
 
-// This middleware adds the json header to every response
+// get current ip address
 
 // Assign Routes
 require("./routes/router")(app);
@@ -51,4 +54,6 @@ app.use("*", (req, res) => {
 });
 
 // Open Server on selected Port
-app.listen(PORT, () => console.info("Server listening on port ", PORT));
+app.listen(PORT, () => {
+    console.log(`Server is running on :${ ip.address()}:${PORT}`);
+});
