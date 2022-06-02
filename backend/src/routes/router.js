@@ -4,9 +4,10 @@ const upload = require("../storage/multer");
 module.exports = (app) => {
   // User route //
   app.post("/api/v1/student/create", userController.createStudent);
-  app.post("/api/v1/student/update/", userController.updateStudent);
+  app.post("/api/v1/student/update", userController.updateStudent);
   app.get("/api/v1/student/:user/photo", userController.getStudentPhoto);
   app.get("/api/v1/students", userController.getStudents);
+  app.delete("/api/v1/student/:userId", userController.deleteStudent);
 
   // User validation route //
   // app.post("/api/v1/auth", userController.authUser);

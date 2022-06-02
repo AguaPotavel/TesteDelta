@@ -11,10 +11,12 @@ import {
   createStudent,
   uploadPhoto,
   getStudentPhoto,
+  updateStudent,
 } from "../../services/api";
 import { useTheme } from "styled-components";
 // import { launchImageLibrary } from "react-native-image-picker";
 import * as ImagePicker from "expo-image-picker";
+import config from "../../config";
 
 export default function Student({ route, navigation }) {
   const theme = useTheme();
@@ -22,8 +24,9 @@ export default function Student({ route, navigation }) {
   const { student } = route.params;
   const [username, setUsername] = useState(student?.username || "");
   const [address, setAddress] = useState(student?.address || "");
+  const [photoIsChanged, setPhotoIsChanged] = useState(false);
   const [photo, setPhoto] = useState({
-    uri: "https://i.imgur.com/HepaLlN.jpeg",
+    uri: `image_1654134937161.jpg`,
   });
   const refInputUsername = createRef();
   const refInputAddress = createRef();
@@ -42,24 +45,24 @@ export default function Student({ route, navigation }) {
       setShowModal(false);
       setIsLoading(false);
       if (response.status === 200) {
-        console.log(response.data.image);
+        
         setPhoto({
-          uri: `http://192.168.100.7:3000/static/images/${response.data.image}`,
+          uri: `http://${config.BASE_URL}/static/images/${response.data.image}`,
         });
       }
     }
   };
 
   useEffect(() => {
-    // loadImage();
+    loadImage();
   }, []);
 
   useEffect(() => {
     // loadImage();
-    console.log(photo);
+    // console.log(photo);
   }, [photo]);
 
-  const handleOpenModal = () => {
+  const handleOpenModalStudent = () => {
     setIsLoading(true);
     setShowModal(true);
     refInputUsername.current.blur();
@@ -70,11 +73,11 @@ export default function Student({ route, navigation }) {
         <ModalConfirmation
           onClose={handleCloseModal}
           onConfirm={() => {
+            handleCreateUpdateStudent();
             handleCloseModal();
-            handleCreateStudent();
           }}
           header={student !== undefined ? "Atualizar Aluno" : "Criar Aluno"}
-          title={student !== undefined ? "Confirmar" : "Confirma "}
+          title={student !== undefined ? "Confirmar" : "Confirmar"}
           text={
             student !== undefined
               ? "você está prestes a atualizar os dados, está operação não poderá ser desfeita, prosseguir?"
@@ -85,7 +88,8 @@ export default function Student({ route, navigation }) {
     }, 2000);
   };
 
-  const upPhoto = async (data) => {
+  const upPhoto = async (dataFull) => {
+    const { data } = dataFull;
     const response = await uploadPhoto(data.user.id, photo);
     if (response.status === 200) {
       return true;
@@ -93,21 +97,30 @@ export default function Student({ route, navigation }) {
     return false;
   };
 
-  const handleCreateStudent = async () => {
+  const handleCreateUpdateStudent = async () => {
     setIsLoading(true);
     const data = {
       username,
       address,
     };
 
-    const response = await createStudent(data);
+    let response;
+
+    if (student !== undefined) {
+      response = await updateStudent({id: student.id, ...data});
+    } else{
+      response = await createStudent(data);
+    }
+
     if (response !== {}) {
       setIsLoading(false);
-      if (photo !== {}) {
+      if (photo !== {} && photoIsChanged) {
+        console.log("uploading photo");
         await upPhoto(response);
+        setPhotoIsChanged(false);
       }
     }
-    // console.log(response);
+    
     setIsLoading(false);
     navigation.navigate("Home");
   };
@@ -124,6 +137,7 @@ export default function Student({ route, navigation }) {
     console.log(result);
 
     if (!result.cancelled) {
+      setPhotoIsChanged(true);
       setPhoto(result);
     }
   };
@@ -159,7 +173,7 @@ export default function Student({ route, navigation }) {
         ref={refInputAddress}
       />
       <PrimaryButton
-        onPress={handleOpenModal}
+        onPress={handleOpenModalStudent}
         text={student !== undefined ? "Atualizar" : "Criar"}
       />
     </Container>

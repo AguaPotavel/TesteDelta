@@ -31,7 +31,12 @@ export default function Home({ navigation }) {
   useEffect(() => {
     async function fetchStudents() {
       setIsLoading(true);
-      const { students } = await getStudents();
+      const response = await getStudents();
+      
+      if(response.status !== 200) return;
+
+      const { students } = response.data;
+      
       setIsLoading(false);
       setStudentsList(students);
     }

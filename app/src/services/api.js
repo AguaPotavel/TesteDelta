@@ -1,5 +1,6 @@
 import axios from "axios";
-const baseUrl = "http://192.168.100.7:3000/api/v1/";
+import config from "../config";
+const baseUrl = `http://${config.BASE_URL}/api/v1/`;
 
 const api = axios.create({
   baseURL: baseUrl,
@@ -14,33 +15,26 @@ export const getStudents = async () => {
       },
     });
 
-    if (response.status === 200) {
-      return response.data;
-    }
-
-    if (response.status === 404) {
-      return [];
-    }
+    return {
+      data: response.data,
+      status: response.status,
+    };
   } catch (error) {
     console.log(error);
+    return {
+      status: 500,
+      message: "Internal Server Error",
+    }
   }
 };
 
 export const updateStudent = async (data) => {
   try {
-    const response = await api.post(`student/update/`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: { ...data },
-    });
+    const response = await api.post(`student/update`, data);
 
-    if (response.status === 200) {
-      return response.data;
-    }
-
-    if (response.status === 404) {
-      return {};
+    return {
+      data: response.data,
+      status: response.status,
     }
   } catch (error) {
     console.log(error);
@@ -52,14 +46,34 @@ export const createStudent = async (data) => {
   try {
     const response = await api.post("student/create", data);
 
-    if (response.status === 201) {
-      return response.data;
-    }
+    return {
+      status: response.status,
+      data: response.data,
+    };
+
   } catch (error) {
     console.log(error);
-    return {};
+    return {
+      status: 500,
+    };
   }
 };
+
+export const deleteStudent = async (id) => {
+  try {
+    const response = await api.delete(`student/${id}`);
+
+    return {
+      status: response.status,
+      data: response.data,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      status: 500,
+    };
+  }
+}
 
 export const getStudentPhoto = async (id) => {
   try {
@@ -72,7 +86,9 @@ export const getStudentPhoto = async (id) => {
     return response;
   } catch (error) {
     console.log(error);
-    return {};
+    return {
+      status: 500,
+    };
   }
 };
 
@@ -96,11 +112,14 @@ export const uploadPhoto = async (id, image) => {
       },
     });
 
-    if (response.status === 200) {
-      return response.data;
-    }
+    return {
+      status: response.status
+    };
+
   } catch (error) {
     console.log(error.response);
-    return {};
+    return {
+      status: 500,
+    };
   }
 };

@@ -15,7 +15,6 @@ var fs = require("fs");
 var path = require("path");
 
 // Load .env Enviroment Variables to process.env
-// require("mandatoryenv").load(["DB_URL", "PORT", "SECRET"]);
 
 // Connect to MongoDB
 const { PORT } = process.env;
@@ -36,18 +35,12 @@ app.use(cors());
 app.use(helmet());
 
 // This middleware adds the json header to every response
-app.use("*", (req, res, next) => {
-  res.setHeader("Content-Type", "application/json");
-  next();
-});
 
 // Assign Routes
-// app.use('/', require('./routes/router.js'));
 require("./routes/router")(app);
 
-console.log(path.join(__dirname, "..", "uploads"));
-
-app.use("/static", express.static(path.join(__dirname + "/static/images")));
+// Assign Static folder
+app.use("/static/images", express.static(path.join(__dirname + "/static/images")));
 
 // // Handle errors
 app.use(errorHandler());

@@ -3,36 +3,6 @@ var User = require("../models/user");
 const path = require("path");
 const fs = require("fs");
 
-// exports.authUser = (req, res) => {
-//   const { username, email } = req.body;
-//   console.log("received:", username, email);
-//   console.log(req.body);
-//   User.findOne({
-//     where: {
-//       username: username,
-//       email: email,
-//     },
-//   })
-//     .then((user) => {
-//       if (!user) {
-//         res.status(401).json({
-//           message: "Invalid Credentials",
-//         });
-//       } else {
-//         res.status(200).json({
-//           message: "Success",
-//           user: user,
-//         });
-//       }
-//     })
-//     .catch((err) => {
-//       res.status(500).json({
-//         message: "An error occurred",
-//         error: err,
-//       });
-//     });
-// }
-
 exports.getStudents = async (req, res) => {
   const students = await User.findAll();
   if (!students)
@@ -75,7 +45,6 @@ exports.updateStudent = async (req, res) => {
 
 exports.createStudent = async (req, res) => {
   const { username, address } = req.body;
-  console.log(req.body);
 
   User.create({
     username,
@@ -95,7 +64,41 @@ exports.createStudent = async (req, res) => {
     });
 };
 
-exports.getStudentPhoto = async (req, res, next) => {
+exports.deleteStudent = async (req, res) => {
+  const { userId } = req.params;
+
+  const profileImage = await Image.findOne({
+    where: {
+      userId: userId,
+    },
+  })
+
+  const pathImage = path.join(__dirname, "../static/images", profileImage.filename);
+
+  if (fs.existsSync(pathImage)) {
+    fs.unlinkSync(pathImage);
+  }
+
+  const user = await User.findByPk(userId);
+  if (!user)
+    return res.status(404).json({
+      message: "User not found",
+    });
+
+  try {
+    await user.destroy();
+    return res.status(200).json({
+      message: "Success",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "An error occurred",
+      error: err,
+    });
+  }
+}
+
+exports.getStudentPhoto = async (req, res) => {
   const { user } = req.params;
   const response = await User.findByPk(parseInt(user));
 
@@ -116,7 +119,7 @@ exports.getStudentPhoto = async (req, res, next) => {
         message: "Image not found",
       });
 
-    // const file = path.join(__dirname, "../../", image.filepath);
+    
     res.status(200).json({
       message: "Success",
       image: image.filename,
@@ -131,9 +134,7 @@ exports.getStudentPhoto = async (req, res, next) => {
 
 exports.postPhoto = async (req, res) => {
   const { userId } = req.params;
-  const { filename, mimetype, size, path } = req.file;
-
-  console.log(req.file);
+  const { filename, mimetype, size } = req.file;
 
   const hasImageOnUser = await Image.findOne({
     where: {
@@ -142,12 +143,20 @@ exports.postPhoto = async (req, res) => {
   });
 
   if (hasImageOnUser) {
+    console.log(path.join(__dirname, "../static/images", hasImageOnUser.filename));
+    const pathImage = path.join(__dirname, "../static/images", hasImageOnUser.filename);
+
+    if (fs.existsSync(pathImage)) {
+      fs.unlinkSync(pathImage);
+    }
+
     try {
       const update = await hasImageOnUser.update({
         filename: filename,
         mimetype: mimetype,
         size: size,
-        filepath: path,
+        filepath: req.file.path,
+        userId: userId,
       });
       return res.status(200).json({
         message: "Success",
@@ -165,7 +174,7 @@ exports.postPhoto = async (req, res) => {
     filename: filename,
     mimetype: mimetype,
     size: size,
-    filepath: path,
+    filepath: req.file.path,
     userId: userId,
   });
 

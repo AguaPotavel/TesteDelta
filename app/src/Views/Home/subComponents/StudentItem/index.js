@@ -13,9 +13,31 @@ import {
   ActionButtonIcon,
 } from "./styles";
 
+import { deleteStudent } from "../../../../services/api";
+import { useModal } from "../../../../contexts/useModal";
+
 export const StudentItemComponent = ({ navigation, data }) => {
   const { colors } = useTheme();
   const { item } = data;
+  const { setShowModal, setIsLoading } = useModal();
+
+  const handleDeleteStudent = async () => {
+    setIsLoading(true);
+    setShowModal(true);
+    const response = await deleteStudent(item.id);
+
+    if (response.status !== 200) {
+      setIsLoading(false);
+      setShowModal(false);
+      return;
+    }
+
+    setIsLoading(false);
+    setShowModal(false);
+    navigation.navigate("Home");
+  }
+
+
 
   return (
     <StudentItem>
@@ -40,7 +62,7 @@ export const StudentItemComponent = ({ navigation, data }) => {
         >
           <ActionButtonIcon name="edit" color={colors.primary} />
         </ActionButton>
-        <ActionButton onPress={() => console.log("teste")}>
+        <ActionButton onPress={handleDeleteStudent}>
           <ActionButtonIcon name="trash" color={colors.primary} />
         </ActionButton>
       </ActionContainer>
